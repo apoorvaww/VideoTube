@@ -1,0 +1,1 @@
+mongoose.model() takes two values: first what should be the model? and second: the model should be created based on which schema
