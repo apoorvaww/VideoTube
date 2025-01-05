@@ -1,1 +1,7 @@
 mongoose.model() takes two values: first what should be the model? and second: the model should be created based on which schema
+
+there are two scenarios for when user uploads a photo/file: one when you temporarily store the files on your server and then upload them on cloudinary
+second when you directly upload your files to cloudinary.
+the values of environment variables are picked up from the system and not from files.
+
+nodemon is a development dependency that means it will be useful only while developing,, but its not useful in production.
