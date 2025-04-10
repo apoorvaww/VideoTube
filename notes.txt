@@ -5,3 +5,33 @@ second when you directly upload your files to cloudinary.
 the values of environment variables are picked up from the system and not from files.
 
 nodemon is a development dependency that means it will be useful only while developing,, but its not useful in production.
+
+After connection database in db directory go to package.json file and add into "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+
+Express:
+url se jb bhi koi data aata hai vo req.params me store hota hai.
+req.body me data kisi bhi trah aa skta hai.. form etc.
+sometimes you might even read data from cookies, involves middleware
+app.use() is used when you are using middleware and cors
+CORS: cross origin resource sharing
+
+MIDDLEWARE:
+middleware is the checking which we do in between when the request is sent and when response is sent to make sure if the user requesting is capable of requesting or not.
+(err,req,res,next): next is a flag to make the sequence of middleware testing. 
+
+BCRYPT: 
+bcrypt and bcryptjs are two different although the functionalities are almost similar. bcryptjs is optimised version of bcrypt. this library helps us to hash our password
+
+JWT: JSON WEB TOKEN:
+JWT is a beared token and whoever has access of this token it returns data to that.
+these tokens in web applications are used for authentication and information exchange. After a user logs in with its credentials the server generated a JWT and sends it to the client.
+The JWTs are composed of three parts: Header, Payload, and Signature, in signature we have a secret.
+
+
+PRE HOOK IN MIDDLEWARES: 
+this hook runs just before the data gets saved. so before saving the data we are trying to encrypt our password.
+
+
+MULTER: 
+a node.js middleware for handling form-data, primarily used for uploading files. 
+what we will be doing: taking the file from user via multer and storing the files in our temporary/local server and then transferring it into the cloudinary server.
