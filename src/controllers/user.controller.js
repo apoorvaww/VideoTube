@@ -271,7 +271,11 @@ const getCurrentUser = asyncHandler(async(req, res) => {
 
   return res
   .status(200)
-  .json(200, req.user, "Current user fetched successfully")
+  .json(new ApiResponse(
+    200, 
+    req.user, 
+    "Current user fetched successfully"
+  ))
 })
 
 
@@ -314,7 +318,7 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
     throw new ApiError(400, "Error while uploading the avatar")
   }
 
-  await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
@@ -324,6 +328,9 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
     {new: true}
   ).select("-password")
 
+  return res
+  .status(200)
+  .json(200, user, "avatar updated successfully")
 })
 
 
@@ -340,7 +347,7 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
     throw new ApiError(400, "Error while uploading cover image")
   }
 
-  await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       coverImage: coverImage.url
@@ -357,6 +364,90 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
 })
 
 
+const getUserChannelProfile = asyncHandler(async(req, res) => {
+  const {username} = req.params
+
+  if(!username?.trim()){
+    throw new ApiError(400, "username is missing")
+  }
+
+  const channel = await User.aggregate([
+    //aggregate method takes different pipelines. pipelines are nothing but stages.. output of first pipeline goes to input of another pipeline.
+    {
+      $match: {
+        username: username?.toLowerCase()
+      }
+    },
+    {
+      // this aggregation pipelin will give you the total number of subscribers of the username mentioned in the request url
+      $lookup: {
+        from: "subscription",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscribers" 
+      }
+    }, 
+    {
+      // and this pipeline will give you the number of people that particular user has subscribed to.
+      $lookup: {
+        from: "subscription",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo"
+      }
+    },
+    {
+      // addfield pipeline will now add another field while keeping the rest of the fields intact
+      $addFields: {
+        //this will return the count of the field we created in the first lookup
+        subscribersCount: {
+          $size: "$subscribers"
+        },
+        channelsSubscribedToCount:{
+          $size: "$subscribedTo"
+        },
+        isSubscribed: {
+          // ye field frontend me send krenge user ko show krne ke liye if the user has already subscribed to that channel or not.
+          $cond:{
+            if: {$in: [req.user?._id, "$subscribers.subscriber"]},
+            then: true,
+            else: false
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        fullName: 1,
+        username: 1,
+        subscribersCount: 1,
+        channelsSubscribedToCount: 1,
+        isSubscribed: 1,
+        avatar: 1,
+        coverImage: 1,
+        email: 1
+      }
+    }
+
+  ])
+
+  console.log(channel)
+
+  if(!channel?.length) {
+    throw new ApiError(404, "channel does not exist")
+  }
+
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(200, channel[0], "User channel fetched successfully")
+  )
+
+
+})
+
+
+
 
 export { 
   registerUser,
@@ -365,6 +456,8 @@ export {
   refreshAccessToken,
   changeCurrentPassword,
   getCurrentUser,
+  updateAccountDetails,
   updateUserAvatar,
-  updateUserCoverImage
+  updateUserCoverImage,
+  getUserChannelProfile
 };
