@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import {uploadCloudinary} from '../utils/cloudinary.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import jwt  from "jsonwebtoken"
+import mongoose from "mongoose";
 
 
 const generateAccessAndRefreshTokens = async(userId) => {
@@ -448,6 +449,68 @@ const getUserChannelProfile = asyncHandler(async(req, res) => {
 
 
 
+const getUserWatchHistory = asyncHandler(async(req, res) => {
+
+  const user = User.aggregate([
+    {
+      $match: {
+        //when we write req.user._id, mongoose takes the string _id from mongodb and we work with that but in aggregation pipeline we have to use mongoose manually:
+        _id: new mongoose.Types.ObjectId(req.user._id)
+
+      }
+    },
+    {
+      $lookup: {
+        from: "video",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        pipeline: [
+          // ye isliye use kr rhe hain because user model me jo watchHistory field hai vo hm videos models se use kr rhe hain.. but videos model me again owner ha jo user model se hi mil rha hai. to hmein sub-pipeline likhni hogi
+          {
+            $lookup: {
+              from: "user",
+              localField: "owner",
+              foreignField: "_id",
+              as: "ownerOfVideo",
+              // isse ownerOfVideo me pura ka pura user ki details store ho jaengi jo hm nhi chahte. uske liye isi pipeline me ek aur pipeline add kr rhe hain.. jo ye btaegi ki user se kitni fields hmein yhan store krvani hai..
+              pipeline: [
+                {
+                  $project: {
+                    fullName: 1, 
+                    username: 1,
+                    avatar: 1
+                  }
+                },
+                {
+                  $addFields: {
+                    owner: {
+                      $first: "$owner"
+                    }
+                    // owner field ko bs rewrite krna hai taki hm lookup se jo array aa rha hai uska first element chaiye.
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+  ])
+
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(
+      200, 
+      user[0].watchHistory,
+      "Watch history fetched successfully"
+    )
+  )
+})
+
+
+
 
 export { 
   registerUser,
@@ -459,5 +522,6 @@ export {
   updateAccountDetails,
   updateUserAvatar,
   updateUserCoverImage,
-  getUserChannelProfile
+  getUserChannelProfile,
+  getUserWatchHistory
 };
