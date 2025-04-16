@@ -145,7 +145,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   //cookies bhejne se pehle you need to create an object - options:
   const options = {
-    httOnly: true,
+    httpOnly: true,
     secure: true
   }
   //this way the cookies can't be accessed via the front-end part but the browser only
@@ -159,7 +159,7 @@ const loginUser = asyncHandler(async (req, res) => {
         {
           user: loggedInUser, accessToken, refreshToken
         },
-        "User loggedi in successfully."
+        "User logged in successfully."
       )
     )
   
@@ -173,7 +173,7 @@ const logoutUser = asyncHandler(async(req, res) => {
     {
       // update krna kya hai? jo refresh token mila hai hmein use delete krna hai.
       $set: {
-        refreshToken: undefined
+        refreshToken: 1
       }
     }, 
     {

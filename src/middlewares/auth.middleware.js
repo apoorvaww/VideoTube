@@ -8,9 +8,10 @@ export const verifyJWT = asyncHandler(async(req, res, next) => {
     // the cookies are already stored in the database. but another option to access cookies the the authorization header:
 
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer", "")
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
     
-    
+        
+        console.log(token)
         if(!token) {
             throw new ApiError(401, "Unauthorized request")
         }
