@@ -4,16 +4,16 @@ import {
     updateComment,
     deleteComment,
     addComment
-} from '../controllers/comment.controller'
-import { verifyJWT } from "../middlewares/auth.middleware";
+} from '../controllers/comment.controller.js'
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 const router = Router();
 
-router.route("/get-video-comments").get(verifyJWT, getVideoComments)
-router.route("/update-comment").post(verifyJWT, updateComment)
-router.route("/delete-comment").post(verifyJWT, deleteComment)
-router.route("/add-comment").post(verifyJWT, addComment)
+router.route("/get-video-comments/:videoId").get(verifyJWT, getVideoComments)
+router.route("/update-comment/:commentId").post(verifyJWT, updateComment)
+router.route("/delete-comment/:commentId").post(verifyJWT, deleteComment)
+router.route("/add-comment/:videoId").post(verifyJWT, addComment)
 
 
 export default router

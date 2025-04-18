@@ -41,6 +41,7 @@ router.route("/change-password").post(verifyJWT, changeCurrentPassword);
 router.route("/get-current-user").get(verifyJWT, getCurrentUser);
 router.route("/update-account-details").patch(verifyJWT, updateAccountDetails);
 
+// patch request allows you to only update the fields you want to update
 router
   .route("/update-avatar")
   .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);

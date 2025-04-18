@@ -33,5 +33,30 @@ const uploadCloudinary = async (localFilePath) => {
   }
 };
 
+const uploadVideoOnCloudinary = async(localFilePath) => {
+  console.log(localFilePath);
+  try {
+    if(!localFilePath) {
+      return;
+    }
+    const response = await cloudinary.uploader.upload(localFilePath, {
+      resource_type: "video",
+      media_metadata: true,
+    })
+    // console.log(response);
 
-export {uploadCloudinary}
+    fs.unlinkSync(localFilePath);
+    return response;
+
+  } catch (error) {
+    fs.unlinkSync(localFilePath);
+    console.error("Error: failed to upload video on cloudinary ", error)
+    return null;
+  }
+}
+
+
+export {
+  uploadCloudinary,
+  uploadVideoOnCloudinary
+}
