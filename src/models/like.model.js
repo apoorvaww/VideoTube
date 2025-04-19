@@ -2,7 +2,7 @@ import mongoose, {model, Schema} from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 
-const likeSchema = new model(
+const likeSchema = new Schema(
     {
         comment: {
             type: Schema.Types.ObjectId,
@@ -26,7 +26,7 @@ const likeSchema = new model(
         }
     }, 
     {
-        timestamps: true
+        timestamps: true,
     }
 )
 
