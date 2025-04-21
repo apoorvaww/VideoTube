@@ -1,5 +1,5 @@
 import mongoose, {isValidObjectId} from "mongoose";
-import {tweet, Tweet} from '../models/tweet.model.js'
+import { tweet} from '../models/tweet.model.js'
 import {User} from '../models/user.model.js'
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -19,7 +19,7 @@ const createTweet = asyncHandler(async(req, res) => {
         throw new ApiError(400, "no user id found, you can't tweet")
     }
 
-    const tweet = Tweet.create({
+    const tweet = tweet.create({
         owner: userId,
         content: content
     })
@@ -44,7 +44,7 @@ const getUserTweets = asyncHandler(async(req, res) => {
         throw new ApiError(400, "user id not found")
     }
 
-    const existingTweets = Tweet.find({
+    const existingTweets = tweet.find({
         owner: userId
     })
  
@@ -73,7 +73,7 @@ const updateTweet = asyncHandler(async(req, res) => {
         throw new ApiError(400, "this field is required")
     }
 
-    await Tweet.findByIdAndUpdate(
+    await tweet.findByIdAndUpdate(
         tweetId,
         {
             content: newContent
@@ -95,7 +95,7 @@ const deleteTweet = asyncHandler(async(req, res) => {
         throw new ApiError(400, "tweet id not found")
     }
 
-    await Tweet.findByIdAndDelete(tweetId)
+    await tweet.findByIdAndDelete(tweetId)
 
     return res
     .status(200)

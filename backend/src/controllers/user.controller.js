@@ -39,6 +39,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //STEP 1: form/json se mila hua data seedha body me mil jaega.
   // console.log(req.files);
+  console.log("body: ", req.body)
   const { fullName, email, username, password } = req.body;
   // console.log(req.body);
   // console.log("email: ", email);
