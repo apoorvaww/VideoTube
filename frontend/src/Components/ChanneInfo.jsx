@@ -1,0 +1,1 @@
+// to show channel's avatar, name, subscribe button etc.

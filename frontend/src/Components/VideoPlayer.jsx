@@ -1,0 +1,1 @@
+// actual video player component: which handles everything related to rendering and controlling video's playback. 

@@ -16,7 +16,7 @@ const getChannelStats = asyncHandler(async(req, res) => {
         throw new ApiError(400, "no channel id received")
     }
 
-    const objectId = new mongoose.Types.objectId(channelId)
+    const objectId = new mongoose.Types.ObjectId(channelId)
 
     const videoStats = await Video.aggregate([
         {
@@ -86,6 +86,7 @@ const getChannelVideos = asyncHandler(async(req, res) => {
                 as: "channelDetails"
             }
         },
+        
         {
             $sort: {
                 createdAt: -1

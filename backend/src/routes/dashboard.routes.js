@@ -6,7 +6,7 @@ import {
 
 const router = Router()
 
-router.route("/get-channel-stats").get(getChannelStats)
-router.route("/get-channel-videos").get(getChannelStats)
+router.route("/get-channel-stats/:channelId").get(getChannelStats)
+router.route("/get-channel-videos/:channelId").get(getChannelVideos)
 
 export default router;

@@ -33,6 +33,10 @@ const createPlaylist = asyncHandler(async(req, res) => {
         throw new ApiError(500, "something went wrong")
     }
 
+    else{
+        console.log("playlist created successfully");
+    }
+
     return res
     .status(200)
     .json(new ApiResponse(200, playlist, "playlist created successfully"))
@@ -133,24 +137,28 @@ const removeVideoFromPlaylist = asyncHandler(async(req, res) => {
         throw new ApiError("user id not found")
     }
 
-    const playlist = Playlist.findById(playlistId)
+    const playlist = await Playlist.findById(playlistId)
+    .populate('videos')
+    .populate('owner', 'username avatar')
+
+    // console.log(playlist.videos);
 
     if(!playlist) {
         throw new ApiError(400, "playlist not found")
     }
 
-    const video = Video.findById(videoId)
+    const video = await Video.findById(videoId)
 
     if(!video) {
         throw new ApiError(400, "video not found")
     }
 
-    if(playlist.owner.toString() !== userId) {
+    if(playlist.owner._id.toString() !== userId) {
         throw new ApiError(401, "you are not authorized to perform this operation")
     }
 
     playlist.videos = playlist.videos.filter(
-        (vid) => vid.toString() !== videoId
+        (vid) => vid._id.toString() !== videoId
     )
 
 
