@@ -285,16 +285,17 @@ const updateAccountDetails = asyncHandler(async(req, res)=>{
   const {fullName, email, username} = req.body;
   // agar koi file update krvani hai to uske liye totally different controller rkhna chaiye.
 
-  if(!fullName || !email) {
-    throw new ApiError(400, "All fields are required")
-  }
+  // if(!fullName || !email) {
+  //   throw new ApiError(400, "All fields are required")
+  // }
 
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
         fullName: fullName,
-        email: email
+        email: email,
+        username: username
       }
     },
     {new: true} // update hone ke baad jo information hogi vo return hogi

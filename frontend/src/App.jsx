@@ -3,11 +3,14 @@ import {
   Register,
   Signin,
   Home,
-  Dashboard
+  Dashboard,
+  WatchVideo,
+  ProfileSettings
 } from './pages/index.js'
 // import {Navbar} from './Components/Navbar.jsx'
 
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
+import { UploadVideo } from "./pages/UploadVideo.jsx";
 
 
 
@@ -21,6 +24,9 @@ const App = () => {
         {/* <Route path="/logout" element={<Logout/>} /> */}
         <Route path="/dashboard" element={<Dashboard/>} />
         {/* <Route path="/navbar" element={<Navbar/>} /> */}
+        <Route path="/upload-a-video" element={<UploadVideo/>} />
+        <Route path="/watch-video/:id" element={<WatchVideo/>} />
+        <Route path="/profile-settings" element={<ProfileSettings/>} />
       </Routes>
     </Router>
     
