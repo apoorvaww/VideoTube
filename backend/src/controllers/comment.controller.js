@@ -23,7 +23,11 @@ const getVideoComments = asyncHandler(async(req, res) => {
     // .limit(limit)
 
     const comments = await Comment.find({video: videoId})
-    .select("content")
+    .select("content owner")
+    .populate({
+        path: "owner",
+        select: "username avatar"
+    })
     .skip(skip).limit(limit);
 
     // console.log(comments)

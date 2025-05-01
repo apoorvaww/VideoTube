@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {useNavigate} from 'react-router-dom'
 
 export const UploadVideo = () => {
   const backendURL = "http://localhost:8000";
   const accessToken = localStorage.getItem("accessToken");
+
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     title: "",
@@ -49,6 +52,7 @@ export const UploadVideo = () => {
 
       setMessage("Video uploaded successfully!");
       console.log("Upload success", response.data);
+      navigate("/dashboard");
       setForm({
         title: "",
         description: "",
@@ -129,6 +133,7 @@ export const UploadVideo = () => {
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-200"
           >
             {loading ? "Uploading..." : "Upload Video"}
+            
           </button>
         </form>
       </div>
