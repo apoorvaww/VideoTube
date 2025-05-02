@@ -19,20 +19,20 @@ const createTweet = asyncHandler(async(req, res) => {
         throw new ApiError(400, "no user id found, you can't tweet")
     }
 
-    const tweet = tweet.create({
+    const newTweet = await tweet.create({
         owner: userId,
         content: content
     })
 
-    console.log(tweet)
+    console.log(newTweet)
 
-    if(!tweet) {
+    if(!newTweet) {
         throw new ApiError(500, "something went wrong")
     }
 
     return res
     .status(201)
-    .json(new ApiResponse(201, tweet, "tweet created successfully"))
+    .json(new ApiResponse(201, newTweet, "tweet created successfully"))
 
 })
 

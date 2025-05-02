@@ -17,7 +17,7 @@ const toggleVideoLike = asyncHandler(async(req, res) => {
         throw new ApiError(400, "user id not found")
     }
 
-    const existingLikeStatus = await Like.find({
+    const existingLikeStatus = await Like.findOne({
         video: videoId,
         likedBy: userId
     })
@@ -53,6 +53,7 @@ const toggleCommentLike = asyncHandler(async(req, res) => {
     // TODO: toggle like on a comment
 
     const {commentId } = req.params
+    // const {userId} = req.user._id
     const {userId} = req.body
 
     if(!commentId) {
@@ -63,15 +64,15 @@ const toggleCommentLike = asyncHandler(async(req, res) => {
         throw new ApiError(400, "user id not found")
     }
 
-    const existingLikeStatusOnComment = await Like.find({
+    const existingLikeStatusOnComment = await Like.findOne({
         comment: commentId,
         likedBy: userId
     })
 
-    console.log(existingLikeStatus);
+    console.log(existingLikeStatusOnComment);
     let message = ""
 
-    if(existingLikeStatus) {
+    if(existingLikeStatusOnComment) {
         await Like.deleteOne({
             comment: commentId,
             likedBy: userId
@@ -81,7 +82,7 @@ const toggleCommentLike = asyncHandler(async(req, res) => {
     }
     else{
         await Like.create({
-            comment: comment,
+            comment: commentId,
             likedBy: userId
         })
         message="Liked comment successfully"
@@ -90,7 +91,7 @@ const toggleCommentLike = asyncHandler(async(req, res) => {
 
     return res
     .status(200)
-    .json(new ApiResponse(200, existingLikeStatus, message))
+    .json(new ApiResponse(200, existingLikeStatusOnComment, message))
 })
 
 const toggleTweetLike = asyncHandler(async(req, res) => {   
@@ -107,7 +108,7 @@ const toggleTweetLike = asyncHandler(async(req, res) => {
         throw new ApiError(400, "user id not found")
     }
 
-    const existingLikeStatus = await Like.find({
+    const existingLikeStatus = await Like.findOne({
         tweet: tweetId,
         likedBy: userId
     })
@@ -157,6 +158,10 @@ const getLikedVideos = asyncHandler(async(req, res) => {
     return res
     .status(200)
     .json(new ApiResponse(200, likedVideos, "list of liked videos sent successfully"))
+
+})
+
+const totalLikesOnVideo = asyncHandler(async(req,res) => {
 
 })
 

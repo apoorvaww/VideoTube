@@ -11,11 +11,13 @@ export const WatchVideo = () => {
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const[comments, setComments] = useState([]);
+  const [comments, setComments] = useState([]);
 
   const backendURL = "http://localhost:8000";
 
   const accessToken = localStorage.getItem("accessToken");
+
+  const user = localStorage.getItem("user")
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -40,16 +42,16 @@ export const WatchVideo = () => {
     fetchVideo();
   }, [id]);
 
-
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const res = await axios.get(
-          `${backendURL}/api/comments/get-video-comments/${id}`,{
+          `${backendURL}/api/comments/get-video-comments/${id}`,
+          {
             headers: {
-            Authorization: `Bearer ${accessToken}`
+              Authorization: `Bearer ${accessToken}`,
+            },
           }
-        }
         );
 
         console.log("comments response: ", res.data.data);
@@ -62,12 +64,40 @@ export const WatchVideo = () => {
     fetchComments();
   }, [id]);
 
+  // useEffect(() => {
+  //   const fetchLikes = async() => {
+  //     try {
+  //       const res = await axios.get(`${backendURL}/api/like/`)
+  //     } catch (error) {
+
+  //     }
+  //   }
+  // })
+
+  // to handle the toggle like on comment:
+  const toggleLikeOnComment = async (commentId) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const res = await axios.post(
+        `${backendURL}/api/like/toggle-comment-like/${commentId}`,
+        {
+          userId: user?._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log(res.data)
+    } catch (error) {}
+  };
+
   if (!video) return <p className="text-center items-cent">Loading...</p>;
 
   if (loading) {
     return <p className="text-center items-center">Loading...</p>;
   }
-
 
   return (
     <div className="p-6 max-w-4xl mx-auto font-poppins">
@@ -104,15 +134,29 @@ export const WatchVideo = () => {
         </h3>
         <div className="space-y-4">
           {comments?.map((comment, index) => (
-            <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-sm  gap-3">
+            <div
+              key={index}
+              className="bg-gray-100 p-4 rounded-lg shadow-sm  gap-3"
+            >
               <div className="flex items-center gap-3">
-              <img src={comment.owner.avatar} alt="" className="w-10 h-10 rounded-full" />
-              <p className="text-gray-500 font-medium">
-                {comment.owner.username || "Anonymous"}
-              </p>
+                <img
+                  src={comment.owner.avatar}
+                  alt=""
+                  className="w-10 h-10 rounded-full"
+                />
+                <p className="text-gray-500 font-medium">
+                  {comment.owner.username || "Anonymous"}
+                </p>
               </div>
               <div className="items-center p-3">
-              <p className="text-black">{comment.content}</p>
+                <p className="text-black">{comment.content}</p>
+              </div>
+              <div className="flex items-center gap-1 text-gray-600">
+                <button onClick={() => toggleLikeOnComment(comment._id)} className="cursor-pointer">
+                <FaHeart 
+                className="text-red-500" />
+                </button>
+                <span>0</span>
               </div>
             </div>
           ))}

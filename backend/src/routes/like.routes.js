@@ -12,6 +12,6 @@ const router = Router();
 router.route("/toggle-comment-like/:commentId").post(verifyJWT, toggleCommentLike);
 router.route("/toggle-tweet-like/:tweetId").post(verifyJWT, toggleTweetLike);
 router.route("/toggle-video-like/:videoId").post(verifyJWT, toggleVideoLike);
-router.route("/get-liked-videos").post(verifyJWT, getLikedVideos);
+router.route("/get-liked-videos").get(verifyJWT, getLikedVideos);
 
 export default router;
