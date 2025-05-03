@@ -10,14 +10,16 @@ export const WatchVideo = () => {
   const { id } = useParams();
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [comments, setComments] = useState([]);
+  const [likesOnVideo, setLikesOnVideo] = useState(0);
+  const [likesOnComment, setLikesonComment] = useState(0);
 
   const backendURL = "http://localhost:8000";
 
   const accessToken = localStorage.getItem("accessToken");
 
-  const user = localStorage.getItem("user")
+  const user = JSON.parse(localStorage.getItem("userData"));
+// console.log( user.user._id)
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -30,7 +32,7 @@ export const WatchVideo = () => {
             },
           }
         );
-        console.log("Video Response: ", res.data.data);
+        // console.log("Video Response: ", res.data.data);
         setVideo(res.data.data);
         setLoading(false);
       } catch (error) {
@@ -39,8 +41,18 @@ export const WatchVideo = () => {
       }
     };
 
+    if (id) {
+      videoLikes(id);
+    }
+
     fetchVideo();
   }, [id]);
+
+  useEffect(() => {
+    comments.forEach((comment) => {
+      commentLikes(comment._id);
+    });
+  }, [comments]);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -54,7 +66,7 @@ export const WatchVideo = () => {
           }
         );
 
-        console.log("comments response: ", res.data.data);
+        // console.log("comments response: ", res.data.data);
         setComments(res.data.data);
       } catch (error) {
         console.error("failed to fetch comments", error);
@@ -64,15 +76,6 @@ export const WatchVideo = () => {
     fetchComments();
   }, [id]);
 
-  // useEffect(() => {
-  //   const fetchLikes = async() => {
-  //     try {
-  //       const res = await axios.get(`${backendURL}/api/like/`)
-  //     } catch (error) {
-
-  //     }
-  //   }
-  // })
 
   // to handle the toggle like on comment:
   const toggleLikeOnComment = async (commentId) => {
@@ -81,7 +84,7 @@ export const WatchVideo = () => {
       const res = await axios.post(
         `${backendURL}/api/like/toggle-comment-like/${commentId}`,
         {
-          userId: user?._id,
+          userId: user.user._id,
         },
         {
           headers: {
@@ -89,8 +92,65 @@ export const WatchVideo = () => {
           },
         }
       );
-      console.log(res.data)
-    } catch (error) {}
+      console.log(res.data);
+
+      const action = res.data.message.toLowerCase();
+
+      setLikesonComment((prev) => {
+        const currentCount = prev[commentId] || 0;
+        const updatedCount = action.includes("removed") && currentCount > 0?currentCount - 1 : currentCount + 1;
+
+        return{
+          ...prev,
+          [commentId]: updatedCount,
+        }
+      })
+
+    } catch (error) {
+      console.log("error in toggling comment like", error)
+    }
+  };
+
+  const toggleLikeOnVideo = async(videoId) => {
+
+  }
+
+  const videoLikes = async (videoId) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const res = await axios.get(
+        `${backendURL}/api/like/total-likes-on-video/${videoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      // console.log(res.data);
+      setLikesOnVideo(res.data.data);
+    } catch (error) {
+      console.log("error in fetching the likes on video", error);
+    }
+  };
+
+  const commentLikes = async (videoId) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const res = await axios.get(
+        `${backendURL}/api/like/total-likes-on-comment/${videoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      console.log(res.data.data);
+      setLikesonComment(res.data.data);
+    } catch (error) {
+      console.log("error in fetching the likes on comments", error);
+    }
   };
 
   if (!video) return <p className="text-center items-cent">Loading...</p>;
@@ -118,11 +178,14 @@ export const WatchVideo = () => {
         </div>
         <div className="flex items-center gap-3 cursor-pointer hover:text-red-500">
           <FaHeart />
-          <span>{video.likes || 0}</span>
+          {likesOnVideo !== null && <span>{likesOnVideo}</span>}
         </div>
         <div className="flex items-center gap-2 cursor-pointer hover:text-blue-500">
           <FaComment />
           <span>{video.comments?.length || 0}</span>
+        </div>
+        <div className="gap-4 cursor-pointer">
+          <button className="bg-red-400 ">Subscribe</button>
         </div>
       </div>
       <p className="text-gray-700 mb-6">{video.description}</p>
@@ -132,6 +195,9 @@ export const WatchVideo = () => {
         <h3 className="text-xl font-semibold text-gray-800 mb-4">
           Comments ({comments?.length || 0})
         </h3>
+        <div>
+          <button>Add Comment</button>
+        </div>
         <div className="space-y-4">
           {comments?.map((comment, index) => (
             <div
@@ -152,11 +218,16 @@ export const WatchVideo = () => {
                 <p className="text-black">{comment.content}</p>
               </div>
               <div className="flex items-center gap-1 text-gray-600">
-                <button onClick={() => toggleLikeOnComment(comment._id)} className="cursor-pointer">
-                <FaHeart 
-                className="text-red-500" />
+                <button
+                  onClick={() => toggleLikeOnComment(comment._id)}
+                  className="cursor-pointer"
+                >
+                  <FaHeart className="text-gray-500 hover:text-red-500" />
                 </button>
-                <span>0</span>
+                {typeof likesOnComment == "number" && (
+                  <span>{likesOnComment || 0}</span>
+                  
+                )}
               </div>
             </div>
           ))}

@@ -162,12 +162,42 @@ const getLikedVideos = asyncHandler(async(req, res) => {
 })
 
 const totalLikesOnVideo = asyncHandler(async(req,res) => {
+    const {videoId} = req.params;
 
+    if(!videoId) {
+        throw new ApiError(400, "video id is required");
+    }
+
+    const likeCount = await Like.countDocuments({
+        video: videoId
+    });
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, likeCount, "total likes of video sent successfully"))
+})
+
+const totalLikesOnComment = asyncHandler(async(req, res) => {
+    const {commentId} = req.params;
+
+    if(!commentId) {
+        throw new ApiError(400, "comment id is required")
+    }
+
+    const likeCount = await Like.countDocuments({
+        comment: commentId
+    });
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, likeCount, "total likes on comment sent successfully"))
 })
 
 export {
     toggleCommentLike,
     toggleVideoLike,
     toggleTweetLike,
-    getLikedVideos
+    getLikedVideos,
+    totalLikesOnVideo,
+    totalLikesOnComment
 }
