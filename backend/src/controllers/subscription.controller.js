@@ -68,7 +68,7 @@ const getUserChannelSubscribers = asyncHandler(async(req, res) => {
     }).populate("subscriber", "fullName avatar")
 
     if(subscribersList.length === 0) {
-        throw new ApiError(400, "zero subscribers of this channel found")
+        return res.status(200).json(new ApiResponse(200, "zero subscribers of this channel found"))
     }
 
     return res

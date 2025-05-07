@@ -5,6 +5,7 @@ import {Dashboard} from "./Dashboard"
 import { Home } from "./Home"
 import { WatchVideo } from "./WatchVideo"
 import { ProfileSettings } from "./ProfileSettings"
+import { Subscription } from "./Subscription"
 
 export {
     Register,
@@ -13,5 +14,6 @@ export {
     Dashboard,
     Home,
     WatchVideo,
-    ProfileSettings
+    ProfileSettings,
+    Subscription
 }

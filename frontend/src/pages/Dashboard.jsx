@@ -9,12 +9,17 @@ export const Dashboard = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [subscribers, setSubscribers] = useState([]);
+  const [showSubscribers, setShowSubscribers] = useState(false);
+  const [showLikes, setShowLikes] = useState(false);
 
   const navigate = useNavigate();
 
   const backendURL = "http://localhost:8000";
   const accessToken = localStorage.getItem("accessToken");
 
+  // to fetch user's subscribers' list:
+  // to fetch current user's information:
   useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true);
@@ -30,12 +35,14 @@ export const Dashboard = () => {
         );
 
         const userData = userResponse.data.data;
+        // console.log("user data" , userData)
         setUser(userData);
 
         try {
           const statsRes = await axios.get(
             `${backendURL}/api/dashboard/get-channel-stats/${userData._id}`
           );
+          console.log(statsRes);
           setStats(statsRes.data.data);
 
           const videoRes = await axios.get(
@@ -60,6 +67,41 @@ export const Dashboard = () => {
       setError(new Error("Access Token is missing. Please log in."));
     }
   }, [accessToken]);
+
+  // console.log(user)
+
+  useEffect(() => {
+    const subscribersList = async () => {
+      try {
+        // console.log(user._id)
+        const res = await axios.get(
+          `${backendURL}/api/subscription/user-channel-subscribers/${user._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        // console.log("subscriber list response" , res)
+
+        // console.log("subscribers list response: ", res.data.data);
+        setSubscribers(res.data.data);
+        // console.log("subscribers: " , subscribers)
+      } catch (error) {
+        console.log(
+          "error in feching the subscriber list of current user",
+          error
+        );
+      }
+    };
+    if (user) {
+      subscribersList();
+    }
+  }, [user]);
+
+  const toggleSubscribers = () => {
+    setShowSubscribers((prev) => !prev);
+  };
 
   if (loading) {
     return (
@@ -139,6 +181,54 @@ export const Dashboard = () => {
             <p className="text-3xl font-bold text-purple-500">
               {stats.totalSubscribers}
             </p>
+
+            {/* Show Subscribers Button */}
+            <button
+              onClick={() => setShowSubscribers(true)}
+              className="mt-3 px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition"
+            >
+              Show Subscribers
+            </button>
+
+            {/* Modal Popup */}
+            {showSubscribers && (
+              <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                <div className="bg-white w-[90%] max-w-md rounded-lg shadow-lg p-6 relative items-center">
+                  <h3 className="text-xl font-semibold mb-4">Subscribers</h3>
+                  <button
+                    onClick={() => setShowSubscribers(false)}
+                    className="absolute top-2 right-2 text-gray-600 hover:text-black cursor-pointer ml-5"
+                  >
+                    ✕
+                  </button>
+                  <div className="space-y-4 max-h-72 overflow-y-auto">
+                    {subscribers.map((sub) => (
+                      <div
+                        key={sub._id}
+                        className="flex items-center space-x-3 border-b pb-2"
+                      >
+                        <img
+                          src={sub.subscriber.avatar}
+                          alt="avatar"
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <p className="text-gray-800 font-medium">
+                          {sub.subscriber.fullName}
+                        </p>
+                        <p className="text-gray-800 font-medium">
+                          {sub.subscriber.username}
+                        </p>
+                      </div>
+                    ))}
+                    {subscribers.length === 0 && (
+                      <p className="text-gray-500 text-sm">
+                        No subscribers found.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -169,7 +259,6 @@ export const Dashboard = () => {
 
         {/* Videos List */}
         <div>
-          
           {stats.totalVideos === 0 ? (
             <p className="text-gray-500">
               You haven't uploaded any videos yet.

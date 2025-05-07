@@ -5,7 +5,8 @@ import {
   Home,
   Dashboard,
   WatchVideo,
-  ProfileSettings
+  ProfileSettings,
+  Subscription
 } from './pages/index.js'
 // import {Navbar} from './Components/Navbar.jsx'
 
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/upload-a-video" element={<UploadVideo/>} />
         <Route path="/watch-video/:id" element={<WatchVideo/>} />
         <Route path="/profile-settings" element={<ProfileSettings/>} />
+        <Route path="/subscribed-channels" element={<Subscription/>} />
       </Routes>
     </Router>
     

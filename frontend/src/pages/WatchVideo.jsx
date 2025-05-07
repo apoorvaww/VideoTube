@@ -184,7 +184,7 @@ export const WatchVideo = () => {
           <FaComment />
           <span>{video.comments?.length || 0}</span>
         </div>
-        <div className="gap-4 cursor-pointer">
+        <div className="gap-4 cursor-pointer ">
           <button className="bg-red-400 ">Subscribe</button>
         </div>
       </div>
