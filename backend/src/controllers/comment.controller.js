@@ -22,21 +22,89 @@ const getVideoComments = asyncHandler(async(req, res) => {
     // .skip(skip)
     // .limit(limit)
 
-    const comments = await Comment.find({video: videoId})
+    const comments = await Comment.find({
+        video: videoId,
+        parentComment: null // this will return only the top-level comments
+    })
     .select("content owner")
     .populate({
         path: "owner",
         select: "username avatar"
     })
+    .sort({createdAt: -1})
     .skip(skip).limit(limit);
 
     // console.log(comments)
 
     return res
     .status(200)
-    .json( new ApiResponse(200, comments, "comments of videos sent successfully"))
+    .json( new ApiResponse(200, comments, "top-level comments of videos sent successfully"))
 
 })
+
+const addReplyToComment = asyncHandler(async(req, res) => {
+    const {commentId} = req.params;
+    const {videoId, content, userId} = req.body;
+    if(!videoId || !commentId) {
+        throw new ApiError(400, "video id and commentId is required");
+    }
+
+    if(!content) {
+        throw new ApiError(400, "comment id is required")
+    }
+
+    if(!userId) {
+        throw new ApiError(400, "user id is required")
+    }
+
+    const parentCommentId = await Comment.findById(commentId);
+    if(!parentCommentId) {
+        throw new ApiError(400, "parent comment id not found");
+    }
+
+    const reply = await Comment.create({
+        content,
+        video: videoId,
+        owner: userId,
+        parentComment: commentId,
+    });
+
+    if(!reply) {
+        throw new ApiError(400, "couldn't create reply to comment")
+    }
+
+    const populatedReply = await reply.populate("owner", "username avatar" )
+
+    return res
+    .status(201)
+    .json(new ApiResponse(201, populatedReply, "reply to comment addee successfully"))
+
+
+})
+
+const getCommentReplies = asyncHandler(async(req, res)=>{
+    const {commentId} = req.params;
+
+    if(!commentId) {
+        throw new ApiError(400, "no parent comment id provided")
+    }
+
+    const replies = await Comment.find({
+        parentComment: commentId
+    })
+    .select("content owner createdAt")
+    .populate({
+        path: "owner",
+        select: "username avatar"
+    })
+    .sort({createdAt: 1}) 
+    .lean()
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, replies, "replies fetched successfully"))
+
+} )
 
 const addComment = asyncHandler(async(req, res) => {
     /// add commnets to a video
@@ -113,5 +181,7 @@ export{
     getVideoComments,
     addComment,
     updateComment,
-    deleteComment
+    deleteComment,
+    addReplyToComment,
+    getCommentReplies
 }
