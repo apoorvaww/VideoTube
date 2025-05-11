@@ -138,7 +138,7 @@ const updateComment = asyncHandler(async(req, res) => {
     const {commentId} = req.params
 
     if(!newComment) {
-        throw new ApiError(400, "This field is required")
+        throw new ApiError(400, "new comment field is required")
     }
     // console.log(newComment)
 
