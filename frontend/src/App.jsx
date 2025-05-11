@@ -6,9 +6,12 @@ import {
   Dashboard,
   WatchVideo,
   ProfileSettings,
-  Subscription
+  Subscription,
 } from './pages/index.js'
 // import {Navbar} from './Components/Navbar.jsx'
+import {
+  SideNavbar
+} from './Components/index.js'
 
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import { UploadVideo } from "./pages/UploadVideo.jsx";
@@ -29,6 +32,7 @@ const App = () => {
         <Route path="/watch-video/:id" element={<WatchVideo/>} />
         <Route path="/profile-settings" element={<ProfileSettings/>} />
         <Route path="/subscribed-channels" element={<Subscription/>} />
+        <Route path="/side-navbar" element={<SideNavbar/>} />
       </Routes>
     </Router>
     

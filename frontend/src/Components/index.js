@@ -1,5 +1,6 @@
-import { DashboardNavbar } from "./DashboardNavbar";
+import {SideNavbar} from './SideNavbar.jsx'
+
 
 export {
-    DashboardNavbar
+    SideNavbar
 }

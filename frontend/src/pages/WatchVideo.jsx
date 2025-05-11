@@ -1,9 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaBars } from "react-icons/fa";
 import ReplyList from "../Components/ReplyList";
 import React from "react";
+import { SideNavbar } from "../Components";
 
 export const WatchVideo = () => {
   const { id } = useParams();
@@ -21,6 +22,8 @@ export const WatchVideo = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editContent, setEditContent] = useState("");
   const [showMenu, setShowMenu] = useState({});
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [relatedVideos, setRelatedVideos] = useState([]);
 
   const navigate = useNavigate();
 
@@ -90,6 +93,10 @@ export const WatchVideo = () => {
       setLikesonComment(initialLikes);
     }
   }, [comments]);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const toggleLikeOnVideo = async () => {
     try {
@@ -323,222 +330,307 @@ export const WatchVideo = () => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto font-poppins">
-      <video
-        src={video.videoFile}
-        controls
-        className="w-full rounded-lg shadow mb-4"
-      />
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">{video.title}</h2>
-      <div className="flex items-center gap-10 text-gray-600 text-lg mb-4">
-        <div className="flex items-center gap-3 cursor-pointer">
-          <img
-            src={video.owner.avatar}
-            alt=""
-            className="h-15 w-15 rounded-full border-1"
-            onClick={() => navigate("/dashboard")}
-          />
-          <div>
-            <p
-              className="text-black font-semibold"
-              onClick={() => navigate("/dashboard")}
-            >
-              {video.owner.username}
-            </p>
-            <p className="text-xs text-gray-500">1.2M subscribers</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-6 text-gray-700 text-sm">
-          <div className="flex items-center gap-1 cursor-pointer hover:text-red-600 transition">
-            <FaHeart className="text-lg" onClick={toggleLikeOnVideo} />
-            {likesOnVideo !== null && <span>{likesOnVideo}</span>}
-          </div>
-          <div className="flex items-center gap-1 cursor-pointer hover:text-blue-600 transition">
-            {/* <FaComment className="text-lg" /> */}
-            <span>{video.comments?.length || 0} Comments</span>
-          </div>
-          <div>
-            <button className="bg-black text-white px-4 py-2 rounded-full hover:opacity-90 transition cursor-pointer">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </div>
-      <p className="text-gray-700 mb-6">{video.description}</p>
+    <div className="bg-gray-100 min-h-screen">
+      <div className="flex">
+        {/* Hamburger Menu */}
+        <button
+          onClick={toggleSidebar}
+          className="fixed top-4 left-4 bg-gray-200 p-2 rounded-md shadow-md z-50"
+        >
+          <FaBars className="text-lg text-gray-700" />
+        </button>
 
-      {/* Comments Section */}
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          Comments ({comments?.length || 0})
-        </h3>
-        <div className="mb-6 flex gap-4">
-          <input
-            type="text"
-            placeholder="Add a comment..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="flex-grow px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <button
-            onClick={handleAddComment}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-          >
-            Post
-          </button>
+        {/* Sidebar */}
+        <div
+          className={`fixed top-0 left-0 h-full w-64 bg-white shadow-md z-40 transform transition-transform ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          onClick={() => isSidebarOpen && setIsSidebarOpen(false)} // Close sidebar on outside click
+          style={{ willChange: "transform" }}
+        >
+          <div onClick={(e) => e.stopPropagation()} className="h-full">
+            <SideNavbar />
+          </div>
         </div>
-        <div className="space-y-6">
-          {comments?.map((comment, index) => (
-            <div
-              key={comment._id}
-              className="bg-white p-5 rounded-lg shadow-sm flex gap-4"
-            >
-              <img
-                src={comment.owner.avatar}
-                alt={comment.owner.username || "User Avatar"}
-                className="w-10 h-10 rounded-full object-cover"
+
+        {/* Main Content */}
+        <div
+          className={`flex-1 p-6 ${isSidebarOpen ? "ml-0" : "ml-0 md:ml-64"}`}
+        >
+          <div className="lg:flex lg:gap-8">
+            {/* Video Player and Details (70% width) */}
+            <div className="lg:w-7/12 mb-6 lg:mb-0">
+              <video
+                src={video.videoFile}
+                controls
+                className="w-full rounded-lg shadow aspect-video"
               />
-              <div className="flex-1">
-                <div className="flex justify-between items-start">
+              <h2 className="text-2xl font-bold text-gray-800 mt-4 mb-2">
+                {video.title}
+              </h2>
+              <div className="flex items-center gap-10 text-gray-600 text-lg mb-4">
+                <div className="flex items-center gap-3 cursor-pointer">
+                  <img
+                    src={video.owner.avatar}
+                    alt=""
+                    className="h-10 w-10 rounded-full object-cover border-1"
+                    onClick={() => navigate(`/user/${video.owner.username}`)}
+                  />
                   <div>
-                    <p className="text-gray-800 font-semibold text-sm">
-                      {comment.owner.username || "Anonymous"}
-                    </p>
-                    {editingCommentId === comment._id ? (
-                      <div className="mt-1 flex gap-2">
-                        <input
-                          value={editContent}
-                          onChange={(e) => setEditContent(e.target.value)}
-                          className="border rounded-md px-3 py-2 text-sm w-full focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <button
-                          onClick={() => handleUpdateComment(comment._id)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-md px-3 py-2 font-semibold"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingCommentId(null)}
-                          className="text-gray-500 hover:text-gray-600 text-sm"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <p className="text-gray-700 text-sm mt-1">
-                        {comment.content}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Three dots button */}
-                  <div className="relative">
-                    <button
-                      onClick={() =>
-                        setShowMenu((prev) => ({
-                          ...prev,
-                          [comment._id]: !prev[comment._id],
-                        }))
-                      }
-                      className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                    <p
+                      className="text-black font-semibold cursor-pointer"
+                      onClick={() => navigate(`/user/${video.owner.username}`)}
                     >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                        />
-                      </svg>
-                    </button>
-
-                    {showMenu[comment._id] && (
-                      <div className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-md z-10">
-                        <button
-                          onClick={() => {
-                            setEditingCommentId(comment._id);
-                            setEditContent(comment.content);
-                            setShowMenu({});
-                          }}
-                          className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteComment(comment._id)}
-                          className="block w-full text-left px-3 py-2 text-sm hover:bg-red-100 text-red-600"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
+                      {video.owner.username}
+                    </p>
+                    <p className="text-xs text-gray-500">1.2M subscribers</p>
                   </div>
                 </div>
-
-                {/* Like and Reply button */}
-                <div className="flex items-center gap-4 text-gray-600 mt-2">
-                  <button onClick={() => toggleLikeOnComment(comment._id)}>
-                    <FaHeart className="text-gray-500 hover:text-red-500" />
-                  </button>
-                  <span>{likesOnComment?.[comment._id] || 0}</span>
-
-                  <button
-                    className="text-blue-600 text-sm"
-                    onClick={async () => {
-                      if (!showReplies[comment._id]) {
-                        await fetchReplies(comment._id);
-                      } else {
-                        setShowReplies((prev) => ({
-                          ...prev,
-                          [comment._id]: !prev[comment._id],
-                        }));
-                      }
-                    }}
-                  >
-                    {showReplies[comment._id] ? "Hide Replies" : "View Replies"}
-                  </button>
+                <div className="flex items-center gap-6 text-gray-700 text-sm">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-red-600 transition">
+                    <FaHeart className="text-lg" onClick={toggleLikeOnVideo} />
+                    {likesOnVideo !== null && <span>{likesOnVideo}</span>}
+                  </div>
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-blue-600 transition">
+                    <span>{comments.length || 0} Comments</span>
+                  </div>
+                  <div>
+                    <button className="bg-black text-white px-4 py-2 rounded-full hover:opacity-90 transition cursor-pointer">
+                      Subscribe
+                    </button>
+                  </div>
                 </div>
+              </div>
+              <p className="text-gray-700 mb-6">{video.description}</p>
 
-                {/* Reply Input */}
-                <div className="mt-2">
+              {/* Comments Section */}
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  Comments ({comments?.length || 0})
+                </h3>
+                <div className="mb-6 flex gap-4">
                   <input
                     type="text"
-                    value={replyContent[comment._id] || ""}
-                    onChange={(e) =>
-                      setReplyContent((prev) => ({
-                        ...prev,
-                        [comment._id]: e.target.value,
-                      }))
-                    }
-                    placeholder="Write a reply..."
-                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                    placeholder="Add a comment..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="flex-grow px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                   <button
-                    onClick={() => handleAddReply(comment._id)}
-                    className="mt-1 bg-blue-600 text-white px-3 py-1 rounded hover:opacity-90 text-sm"
+                    onClick={handleAddComment}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
                   >
-                    Reply
+                    Post
                   </button>
                 </div>
+                <div className="space-y-6">
+                  {comments?.map((comment) => (
+                    <div
+                      key={comment._id}
+                      className="bg-white p-5 rounded-lg shadow-sm flex gap-4"
+                    >
+                      <img
+                        src={comment.owner.avatar}
+                        alt={comment.owner.username || "User Avatar"}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-gray-800 font-semibold text-sm">
+                              {comment.owner.username || "Anonymous"}
+                            </p>
+                            {editingCommentId === comment._id ? (
+                              <div className="mt-1 flex gap-2">
+                                <input
+                                  value={editContent}
+                                  onChange={(e) =>
+                                    setEditContent(e.target.value)
+                                  }
+                                  className="border rounded-md px-3 py-2 text-sm w-full focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
+                                <button
+                                  onClick={() =>
+                                    handleUpdateComment(comment._id)
+                                  }
+                                  className="bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-md px-3 py-2 font-semibold"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setEditingCommentId(null)}
+                                  className="text-gray-500 hover:text-gray-600 text-sm"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <p className="text-gray-700 text-sm mt-1">
+                                {comment.content}
+                              </p>
+                            )}
+                          </div>
 
-                {/* Replies Section */}
-                {showReplies[comment._id] && (
-                  <div className="ml-8 mt-2">
-                    <ReplyList replies={replies[comment._id]} />
-                  </div>
-                )}
+                          {/* Three dots button */}
+                          {accessToken &&
+                            comment.owner._id ===
+                              JSON.parse(localStorage.getItem("user"))?._id && (
+                              <div className="relative">
+                                <button
+                                  onClick={() =>
+                                    setShowMenu((prev) => ({
+                                      ...prev,
+                                      [comment._id]: !prev[comment._id],
+                                    }))
+                                  }
+                                  className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                                >
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                                    />
+                                  </svg>
+                                </button>
+
+                                {showMenu[comment._id] && (
+                                  <div className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-md z-10">
+                                    <button
+                                      onClick={() => {
+                                        setEditingCommentId(comment._id);
+                                        setEditContent(comment.content);
+                                        setShowMenu({});
+                                      }}
+                                      className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteComment(comment._id)
+                                      }
+                                      className="block w-full text-left px-3 py-2 text-sm hover:bg-red-100 text-red-600"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                        </div>
+
+                        {/* Like and Reply button */}
+                        <div className="flex items-center gap-4 text-gray-600 mt-2">
+                          <button
+                            onClick={() => toggleLikeOnComment(comment._id)}
+                          >
+                            <FaHeart
+                              className={`text-gray-500 hover:text-red-500 ${
+                                likesOnComment[comment._id] > 0
+                                  ? "text-red-500"
+                                  : ""
+                              }`}
+                            />
+                          </button>
+                          <span>{likesOnComment[comment._id] || 0}</span>
+
+                          <button
+                            className="text-blue-600 text-sm"
+                            onClick={async () => {
+                              if (!showReplies[comment._id]) {
+                                await fetchReplies(comment._id);
+                              } else {
+                                setShowReplies((prev) => ({
+                                  ...prev,
+                                  [comment._id]: !prev[comment._id],
+                                }));
+                              }
+                            }}
+                          >
+                            {showReplies[comment._id]
+                              ? "Hide Replies"
+                              : "View Replies"}
+                          </button>
+                        </div>
+
+                        {/* Reply Input */}
+                        <div className="mt-2">
+                          <input
+                            type="text"
+                            value={replyContent[comment._id] || ""}
+                            onChange={(e) =>
+                              setReplyContent((prev) => ({
+                                ...prev,
+                                [comment._id]: e.target.value,
+                              }))
+                            }
+                            placeholder="Write a reply..."
+                            className="w-full p-2 border border-gray-300 rounded text-sm"
+                          />
+                          <button
+                            onClick={() => handleAddReply(comment._id)}
+                            className="mt-1 bg-blue-600 text-white px-3 py-1 rounded hover:opacity-90 text-sm"
+                          >
+                            Reply
+                          </button>
+                        </div>
+
+                        {/* Replies Section */}
+                        {showReplies[comment._id] && (
+                          <div className="ml-8 mt-2">
+                            <ReplyList replies={replies[comment._id]} />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {comments?.length === 0 && (
+                    <p className="text-gray-500">
+                      No comments yet. Be the first to comment!
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-          ))}
-          {comments?.length === 0 && (
-            <p className="text-gray-500">
-              No comments yet. Be the first to comment!
-            </p>
-          )}
+
+            {/* Related Videos (30% width) */}
+            <div className="lg:w-5/12">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                Up Next
+              </h3>
+              <div className="space-y-4">
+                {relatedVideos.map((relVideo) => (
+                  <Link
+                    key={relVideo._id}
+                    to={`/watch-video/${relVideo._id}`}
+                    className="flex gap-3"
+                  >
+                    <img
+                      src={relVideo.thumbnail}
+                      alt={relVideo.title}
+                      className="w-32 h-18 object-cover rounded-md shadow-sm"
+                    />
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">
+                        {relVideo.title}
+                      </h4>
+                      <p className="text-xs text-gray-600 line-clamp-1">
+                        {relVideo.owner.username}
+                      </p>
+                      {/* <p className="text-xs text-gray-500">Views: 10K</p> */}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

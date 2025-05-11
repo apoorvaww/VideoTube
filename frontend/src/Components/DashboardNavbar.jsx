@@ -74,4 +74,4 @@ const DashboardNavbar = ({ user }) => {
   );
 };
 
-export default DashboardNavbar;
+export default DashboardNavbar
