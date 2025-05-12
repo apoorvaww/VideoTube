@@ -15,6 +15,8 @@ import {
 
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import { UploadVideo } from "./pages/UploadVideo.jsx";
+import { Playlists } from "./pages/Playlists.jsx";
+import { VideosInPlaylist } from "./pages/VideosInPlaylist.jsx";
 
 
 
@@ -33,6 +35,8 @@ const App = () => {
         <Route path="/profile-settings" element={<ProfileSettings/>} />
         <Route path="/subscribed-channels" element={<Subscription/>} />
         <Route path="/side-navbar" element={<SideNavbar/>} />
+        <Route path="/playlists" element={<Playlists/>} />
+        <Route path="/playlist/:playlistId" element={<VideosInPlaylist/>} />
       </Routes>
     </Router>
     

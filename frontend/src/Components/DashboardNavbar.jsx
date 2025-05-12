@@ -22,6 +22,7 @@ const DashboardNavbar = ({ user }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  console.log(user)
 
   return (
     <header className="bg-white shadow-md px-6 py-4 flex items-center justify-between font-poppins relative">

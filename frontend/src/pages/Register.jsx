@@ -113,7 +113,7 @@ export const Register = () => {
         SignupNotify();
         localStorage.setItem("userData", JSON.stringify(user));
 
-        navigate("/sign-in")
+        navigate("/sign-in");
 
         setTimeout(() => {
           window.location.reload();
@@ -128,75 +128,75 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row font-poppins">
-      {/* Left Image */}
-      <div
-        className="hidden md:block md:w-1/2 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url(https://source.unsplash.com/random/800x600/?technology)",
-        }}
-      ></div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 font-poppins px-4">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
+          Create Your Account
+        </h2>
+        <p className="text-center text-gray-500 mb-6 text-sm">
+          Unlock your world of entertainment. Join the{" "}
+          <span className="font-semibold text-blue-600">VideoTube</span>{" "}
+          Community!
+        </p>
 
-      {/* Right Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md">
-          <h2 className="text-3xl font-semibold mb-2 text-gray-800">
-            Create Your Account
-          </h2>
-          <p className="text-sm text-gray-600 mb-6">
-            Unlock your world of entertainment. Join the VideoTube Community!
-          </p>
-          <form onSubmit={SubmitData} className="space-y-4">
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              onChange={handleInputs}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              onChange={handleInputs}
-              required
-              value={data.email}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="text"
-              name="fullName"
-              placeholder="Full Name"
-              onChange={handleInputs}
-              required
-              value={data.fullName}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              onChange={handleInputs}
-              required
-              value={data.password}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <label htmlFor="">
+        <form onSubmit={SubmitData} className="space-y-5">
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            onChange={handleInputs}
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            onChange={handleInputs}
+            required
+            value={data.email}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Full Name"
+            onChange={handleInputs}
+            required
+            value={data.fullName}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleInputs}
+            required
+            value={data.password}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">
               Choose Avatar:
+            </label>
             <input
               type="file"
               name="avatar"
               accept="image/*"
               required
               onChange={(e) => setData({ ...data, avatar: e.target.files[0] })}
-              // value={data.avatar}
               className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">
+              Choose Cover Image:
             </label>
-            <label htmlFor="">
-              Choose Cover Image
             <input
               type="file"
               name="coverImage"
@@ -204,21 +204,18 @@ export const Register = () => {
               onChange={(e) =>
                 setData({ ...data, coverImage: e.target.files[0] })
               }
-              // value={data.coverImage}
               className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
-            </label>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-200"
-            >
-              Create Your Account
-            </button>
-          </form>
-        </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition duration-200"
+          >
+            Create Your Account
+          </button>
+        </form>
       </div>
     </div>
   );
 };
-
-// export default Register;
