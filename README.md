@@ -32,16 +32,73 @@ A full-featured video-sharing platform built with the **MERN Stack** (MongoDB, E
 | Media      | Cloudinary (Video + Thumbnail)   |
 | Auth       | JWT (JSON Web Token), Cookies    |
 
-## 📁 Folder Structure
+## 📁 Folder Structure:
 videotube/
-├── client/ # React frontend
+├── frontend/ # React frontend
 │ ├── src/
 │ │ ├── components/ # UI Components
 │ │ ├── pages/ # Main screens (Home, Watch, Dashboard etc.)
 │ │ └── utils/ # Axios config, helper functions
-├── server/ # Node + Express backend
+├── backend/ # Node + Express backend
 │ ├── controllers/ # Logic for API routes
 │ ├── routes/ # Express routes
 │ ├── models/ # Mongoose models
 │ ├── middleware/ # Auth & error handling
 │ └── utils/ # Cloudinary config etc.
+
+
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/videotube.git
+cd videotube
+```
+2. Install Dependencies
+Backend
+```
+cd server
+npm install
+```
+3. Configure Environment Variables
+Create a .env file inside the server folder and add:
+```
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+4. Start the App
+Backend
+```
+cd backedn
+nodemon src/index.js
+```
+Frontend
+```
+cd frontend
+npm run dev
+```
+
+
+🔐 Authentication Flow:
+JWT is used for generating and validating tokens.
+Tokens are stored in HTTP-only cookies for security.
+Protected routes are guarded usingmiddleware.
+
+
+🌩️ Media Upload with Cloudinary:
+Videos and thumbnails are uploaded from the frontend.
+Cloudinary securely stores the files and returns public URLs.\
+These URLs are saved in MongoDB with the rest of the video metadata.
+
+
+
+
+
+
