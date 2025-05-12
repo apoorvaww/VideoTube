@@ -32,20 +32,6 @@ A full-featured video-sharing platform built with the **MERN Stack** (MongoDB, E
 | Media      | Cloudinary (Video + Thumbnail)   |
 | Auth       | JWT (JSON Web Token), Cookies    |
 
-## 📁 Folder Structure:
-videotube/
-├── frontend/ # React frontend
-│ ├── src/
-│ │ ├── components/ # UI Components
-│ │ ├── pages/ # Main screens (Home, Watch, Dashboard etc.)
-│ │ └── utils/ # Axios config, helper functions
-├── backend/ # Node + Express backend
-│ ├── controllers/ # Logic for API routes
-│ ├── routes/ # Express routes
-│ ├── models/ # Mongoose models
-│ ├── middleware/ # Auth & error handling
-│ └── utils/ # Cloudinary config etc.
-
 
 
 ## ⚙️ Setup Instructions
@@ -59,7 +45,7 @@ cd videotube
 2. Install Dependencies
 Backend
 ```
-cd server
+cd backend
 npm install
 ```
 3. Configure Environment Variables
@@ -76,7 +62,7 @@ CLOUDINARY_API_SECRET=your_api_secret
 4. Start the App
 Backend
 ```
-cd backedn
+cd backend
 nodemon src/index.js
 ```
 Frontend
